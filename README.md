@@ -114,7 +114,7 @@ api-automation-framework/
 
 ### Installation
 ```bash
-git clone <repository-url>
+git clone <r[epository-url](https://github.com/rizwanahmd49/jktech-api-test.git)>
 cd api-automation-framework
 mvn clean install
 ```
