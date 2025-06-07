@@ -1,0 +1,283 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Maven-3.9.0'
+        jdk 'JDK-11'
+    }
+    
+    environment {
+        MAVEN_OPTS = '-Xmx1024m'
+        TEST_ENV = "${params.ENVIRONMENT ?: 'dev'}"
+    }
+    
+    parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['dev', 'qa', 'prod'],
+            description: 'Select the environment to run tests against'
+        )
+        choice(
+            name: 'TEST_SUITE',
+            choices: ['smoke', 'regression', 'performance', 'all'],
+            description: 'Select the test suite to execute'
+        )
+        booleanParam(
+            name: 'PARALLEL_EXECUTION',
+            defaultValue: true,
+            description: 'Enable parallel test execution'
+        )
+        booleanParam(
+            name: 'GENERATE_REPORTS',
+            defaultValue: true,
+            description: 'Generate and publish test reports'
+        )
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    echo "Checking out code for environment: ${TEST_ENV}"
+                }
+                checkout scm
+            }
+        }
+        
+        stage('Environment Setup') {
+            steps {
+                script {
+                    echo "Setting up environment: ${TEST_ENV}"
+                }
+                sh '''
+                    echo "Java Version:"
+                    java -version
+                    echo "Maven Version:"
+                    mvn -version
+                    echo "Environment: ${TEST_ENV}"
+                '''
+            }
+        }
+        
+        stage('Dependencies') {
+            steps {
+                script {
+                    echo "Installing dependencies"
+                }
+                sh 'mvn clean compile test-compile'
+            }
+        }
+        
+        stage('Unit Tests') {
+            when {
+                anyOf {
+                    params.TEST_SUITE == 'all'
+                    params.TEST_SUITE == 'smoke'
+                }
+            }
+            steps {
+                script {
+                    echo "Running unit tests"
+                }
+                sh """
+                    mvn test -Denv=${TEST_ENV} -Dgroups=smoke
+                """
+            }
+            post {
+                always {
+                    publishTestResults testResultsPattern: 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        
+        stage('Integration Tests') {
+            when {
+                anyOf {
+                    params.TEST_SUITE == 'all'
+                    params.TEST_SUITE == 'regression'
+                }
+            }
+            steps {
+                script {
+                    echo "Running integration tests"
+                    if (params.PARALLEL_EXECUTION) {
+                        echo "Executing tests in parallel"
+                    }
+                }
+                sh """
+                    mvn test -Denv=${TEST_ENV} -Dgroups=regression ${params.PARALLEL_EXECUTION ? '-Dparallel=methods -DthreadCount=5' : ''}
+                """
+            }
+            post {
+                always {
+                    publishTestResults testResultsPattern: 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        
+        stage('Cucumber BDD Tests') {
+            when {
+                anyOf {
+                    params.TEST_SUITE == 'all'
+                    params.TEST_SUITE == 'regression'
+                }
+            }
+            steps {
+                script {
+                    echo "Running Cucumber BDD tests"
+                }
+                sh """
+                    mvn test -Pcucumber -Denv=${TEST_ENV} -Dcucumber.filter.tags="@smoke or @regression"
+                """
+            }
+            post {
+                always {
+                    publishTestResults testResultsPattern: 'target/cucumber-reports/*.xml'
+                }
+            }
+        }
+        
+        stage('Performance Tests') {
+            when {
+                anyOf {
+                    params.TEST_SUITE == 'all'
+                    params.TEST_SUITE == 'performance'
+                }
+            }
+            steps {
+                script {
+                    echo "Running performance tests"
+                }
+                sh """
+                    mvn test -Denv=${TEST_ENV} -Dgroups=performance
+                """
+            }
+        }
+        
+        stage('Code Coverage') {
+            steps {
+                script {
+                    echo "Generating code coverage report"
+                }
+                sh 'mvn jacoco:report'
+            }
+            post {
+                always {
+                    publishCoverage adapters: [jacocoAdapter('target/site/jacoco/jacoco.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                }
+            }
+        }
+        
+        stage('Generate Reports') {
+            when {
+                params.GENERATE_REPORTS == true
+            }
+            parallel {
+                stage('Allure Report') {
+                    steps {
+                        script {
+                            echo "Generating Allure reports"
+                        }
+                        sh 'mvn allure:report'
+                    }
+                    post {
+                        always {
+                            allure includeProperties: false, jdk: '', results: [[path: 'target/allure-results']]
+                        }
+                    }
+                }
+                
+                stage('Extent Report') {
+                    steps {
+                        script {
+                            echo "Processing Extent reports"
+                        }
+                        publishHTML([
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'target/extent-reports',
+                            reportFiles: '*.html',
+                            reportName: 'Extent Report'
+                        ])
+                    }
+                }
+            }
+        }
+        
+        stage('Archive Artifacts') {
+            steps {
+                script {
+                    echo "Archiving test artifacts"
+                }
+                archiveArtifacts artifacts: 'target/surefire-reports/**/*.*, target/cucumber-reports/**/*.*, target/extent-reports/**/*.*', allowEmptyArchive: true
+            }
+        }
+    }
+    
+    post {
+        always {
+            script {
+                echo "Pipeline execution completed"
+            }
+            cleanWs()
+        }
+        
+        success {
+            script {
+                echo "Pipeline executed successfully"
+            }
+            emailext (
+                subject: "SUCCESS: API Automation Tests - Build ${BUILD_NUMBER}",
+                body: """
+                    API Automation Test Suite executed successfully!
+                    
+                    Environment: ${TEST_ENV}
+                    Test Suite: ${params.TEST_SUITE}
+                    Build Number: ${BUILD_NUMBER}
+                    
+                    View Reports: ${BUILD_URL}
+                """,
+                to: "${env.NOTIFICATION_EMAIL ?: 'team@company.com'}"
+            )
+        }
+        
+        failure {
+            script {
+                echo "Pipeline failed"
+            }
+            emailext (
+                subject: "FAILURE: API Automation Tests - Build ${BUILD_NUMBER}",
+                body: """
+                    API Automation Test Suite failed!
+                    
+                    Environment: ${TEST_ENV}
+                    Test Suite: ${params.TEST_SUITE}
+                    Build Number: ${BUILD_NUMBER}
+                    
+                    Please check the logs: ${BUILD_URL}console
+                """,
+                to: "${env.NOTIFICATION_EMAIL ?: 'team@company.com'}"
+            )
+        }
+        
+        unstable {
+            script {
+                echo "Pipeline is unstable"
+            }
+            emailext (
+                subject: "UNSTABLE: API Automation Tests - Build ${BUILD_NUMBER}",
+                body: """
+                    API Automation Test Suite has unstable results!
+                    
+                    Environment: ${TEST_ENV}
+                    Test Suite: ${params.TEST_SUITE}
+                    Build Number: ${BUILD_NUMBER}
+                    
+                    Some tests may have failed. Check: ${BUILD_URL}
+                """,
+                to: "${env.NOTIFICATION_EMAIL ?: 'team@company.com'}"
+            )
+        }
+    }
+}
