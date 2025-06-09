@@ -114,7 +114,7 @@ api-automation-framework/
 
 ### Installation
 ```bash
-git clone <r[epository-url](https://github.com/rizwanahmd49/jktech-api-test.git)>
+git clone https://github.com/rizwanahmd49/jktech-api-test.git
 cd api-automation-framework
 mvn clean install
 ```
@@ -153,7 +153,7 @@ Create environment-specific property files:
 
 ```properties
 # config-dev.properties
-api.base.url=https://jsonplaceholder.typicode.com
+api.base.url=https://reqres.in/
 api.timeout=30000
 api.retry.enabled=true
 api.max.retries=3
