@@ -16,7 +16,7 @@ import org.testng.Assert;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 
-public class ReqresUsers {
+public class ReqresUsersStepDef {
 
     private ApiClient apiClient;
     private Post testPost;
