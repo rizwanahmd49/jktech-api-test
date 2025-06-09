@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
         features = "src/test/resources/features",
         glue = {"com.automation.steps"},
 //        tags = "@smoke or @regression",
-        tags = "@Test",
+        tags = "@ReqresApiServices",
         plugin = {
                 "pretty",
                 "html:target/cucumber-reports.html",

@@ -49,20 +49,26 @@ public class ApiClient {
     private void buildRequestSpecification() {
         RequestSpecBuilder requestBuilder = new RequestSpecBuilder();
         requestBuilder.setBaseUri(configManager.getBaseUrl());
+        requestBuilder.setBasePath(configManager.getBasePath());
         requestBuilder.setContentType(ContentType.JSON);
+        requestBuilder.addHeader(configManager.getAuthKey(),configManager.getAuthToken());
         requestBuilder.addHeader("Accept", "application/json");
-        
+        requestBuilder.setAuth(RestAssured.basic(configManager.getAuthKey(),configManager.getAuthToken()));
+
+
         // Add filters for logging and Allure reporting
         requestBuilder.addFilter(new RequestLoggingFilter());
         requestBuilder.addFilter(new ResponseLoggingFilter());
         requestBuilder.addFilter(new AllureRestAssured());
-        
+
         requestSpec = requestBuilder.build();
+
     }
 
     private void buildResponseSpecification() {
         ResponseSpecBuilder responseBuilder = new ResponseSpecBuilder();
         responseSpec = responseBuilder.build();
+
     }
 
     public RequestSpecification getRequestSpec() {

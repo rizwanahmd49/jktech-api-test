@@ -30,7 +30,7 @@ public class ConfigManager {
     private void loadConfiguration() {
 //        System.setProperty("env","qa");
         properties = new Properties();
-        environment = System.getProperty("env", "dev");
+        environment = System.getProperty("env", "qa");
         
         String configFileName = "config-" + environment + ".properties";
         
@@ -55,6 +55,16 @@ public class ConfigManager {
 
     public String getBaseUrl() {
         return getProperty("api.base.url");
+    }
+
+    public String getBasePath() {
+        return getProperty("api.base.path");
+    }
+    public String getAuthKey(){
+        return getProperty("auth.username");
+    }
+    public String getAuthToken(){
+        return getProperty("auth.password");
     }
 
     public int getTimeout() {

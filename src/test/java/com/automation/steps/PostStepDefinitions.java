@@ -1,8 +1,11 @@
 package com.automation.steps;
 
 import com.automation.clients.ApiClient;
+import com.automation.clients.UserServiceController;
+import com.automation.constants.EndPoints;
 import com.automation.models.Post;
 import com.automation.utils.LogManager;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
 import io.restassured.response.Response;
 import org.testng.Assert;

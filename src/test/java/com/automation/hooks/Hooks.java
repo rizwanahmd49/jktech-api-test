@@ -14,11 +14,6 @@ public void setUp(){
 
 }
 
-    public static void main(String[] args) {
-        String baseURL = ConfigManager.getInstance().getBaseUrl();
-        System.out.println(baseURL);
-
-    }
 
 
 }
