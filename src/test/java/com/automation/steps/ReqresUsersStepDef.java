@@ -10,6 +10,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.http.Header;
 import io.restassured.response.Response;
 import org.testng.Assert;
 
@@ -150,4 +151,22 @@ public class ReqresUsersStepDef {
         response=UserServiceController.createUser(method,dataTable);
     }
 
+    @And("the response header {string} should be {string}")
+    public void theResponseHeaderShouldBe(String header, String expectedHeader) {
+        LogManager.info("Verifying Header "+header+"Should have "+expectedHeader);
+        String actualHead=response.header(header);
+        Assert.assertEquals(actualHead,expectedHeader);
+        LogManager.info("Header Verified Successfully!");
+
+
+    }
+
+    @And("the response header {string} should contain {string}")
+    public void theResponseHeaderShouldContain(String header, String expectedHeader) {
+        LogManager.info("Verifying Header "+header+"Should have "+expectedHeader);
+        String actualHead=response.header(header);
+        String actualServerName = response.headers().get(header).getValue();
+        Assert.assertEquals(actualServerName,expectedHeader);
+        LogManager.info("Header Verified Successfully!");
+    }
 }

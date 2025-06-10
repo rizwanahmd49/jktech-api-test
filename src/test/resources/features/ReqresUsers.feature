@@ -62,3 +62,19 @@ Feature: ReqRes API Comprehensive Test Coverage
     Then I should receive a response with status code 204
 
 
+
+# Validate HTTP Response Headers using RestAssured
+
+  @HeaderValidationContentType
+  Scenario: Validate Content-Type header for GET /users request
+    When I send GET request to "users/2" endpoint
+    Then I should receive a response with status code 200
+    And the response header "Content-Type" should be "application/json; charset=utf-8"
+
+
+  @HeaderValidationServer
+  Scenario: Validate Server header for GET /posts request
+    When I send GET request to "users/2" endpoint
+    Then I should receive a response with status code 200
+    And the response header "Server" should contain "cloudflare"
+
