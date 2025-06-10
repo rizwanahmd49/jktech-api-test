@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
         tags = "@ReqresApiServices",
         plugin = {
                 "pretty",
-                "html:target/cucumber-reports.html",
+                "html:target/cucumber-reports/CucumberReport.html",
                 "json:target/cucumber.json",
                 "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
         },
