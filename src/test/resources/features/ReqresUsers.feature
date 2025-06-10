@@ -65,14 +65,14 @@ Feature: ReqRes API Comprehensive Test Coverage
 
 # Validate HTTP Response Headers using RestAssured
 
-  @HeaderValidationContentType
+  @HeaderValidationContentType @Headers
   Scenario: Validate Content-Type header for GET /users request
     When I send GET request to "users/2" endpoint
     Then I should receive a response with status code 200
     And the response header "Content-Type" should be "application/json; charset=utf-8"
 
 
-  @HeaderValidationServer
+  @HeaderValidationServer @Headers
   Scenario: Validate Server header for GET /posts request
     When I send GET request to "users/2" endpoint
     Then I should receive a response with status code 200
