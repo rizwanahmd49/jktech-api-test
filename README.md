@@ -1,4 +1,4 @@
-# API Automation Framework
+# API Automation Framework With Extent and Allure Reporting.
 
 A comprehensive API automation framework built with RestAssured, TestNG, Cucumber, and JUnit for robust API testing with dual reporting capabilities (Allure and Extent Reports).
 

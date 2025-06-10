@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
                 "pretty",
                 "html:target/cucumber-reports/CucumberReport.html",
                 "json:target/cucumber.json",
+                "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm",
                 "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
         },
         monochrome = true,

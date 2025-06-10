@@ -1,51 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="API Automation Test Suite" verbose="1" parallel="methods" thread-count="5">
-    
-    <parameter name="env" value="dev"/>
-    
+<suite name="API Automation Test Suite" verbose="1" parallel="methods" thread-count="2">
+    <parameter name="env" value="qa"/>
     <listeners>
         <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
     </listeners>
-    
-    <test name="Smoke Tests" enabled="true">
-        <groups>
-            <run>
-                <include name="smoke"/>
-            </run>
-        </groups>
+    <test name="Login feature functionality" enabled="true">
         <classes>
-            <class name="com.automation.tests.PostCrudTests">
-                <methods>
-                    <include name="testCreatePost"/>
-                    <include name="testGetPostById"/>
-                </methods>
-            </class>
-        </classes>
-    </test>
-    
-    <test name="Regression Tests" enabled="true">
-        <groups>
-            <run>
-                <include name="regression"/>
-            </run>
-        </groups>
-        <classes>
-            <class name="com.automation.tests.PostCrudTests"/>
-        </classes>
-    </test>
-    
-    <test name="Performance Tests" enabled="true">
-        <groups>
-            <run>
-                <include name="performance"/>
-            </run>
-        </groups>
-        <classes>
-            <class name="com.automation.tests.PostCrudTests">
-                <methods>
-                    <include name="testResponseTimeForGetAllPosts"/>
-                </methods>
+            <class name="com.automation.runners.TestRunner">
             </class>
         </classes>
     </test>
