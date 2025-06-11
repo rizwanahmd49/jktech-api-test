@@ -116,5 +116,13 @@ public class UserServiceController {
         return null;
     }
 
+    public static Response post( String payload) {
+        LogManager.info("Trying to send post request "+"\nData :"+ payload+"\nendpoint"+ EndPoints.CREATE_USER);
+            return apiClient.getRequestSpec()
+                    .body(payload)
+                    .when()
+                    .post(EndPoints.CREATE_USER);
+    }
+
 
 }

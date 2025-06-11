@@ -80,3 +80,8 @@ Feature: ReqRes API Comprehensive Test Coverage
     Then I should receive a response with status code 200
     And the response header "Server" should contain "cloudflare"
 
+
+    @Negative-InvalidPayload
+    Scenario: Verify 400 Bad Request on invalid payload
+    When I send a POST request with Invalid payload "----invalid responsjkljel----"
+    Then I should receive a response with status code 400

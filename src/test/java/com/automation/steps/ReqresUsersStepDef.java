@@ -169,4 +169,13 @@ public class ReqresUsersStepDef {
         Assert.assertEquals(actualServerName,expectedHeader);
         LogManager.info("Header Verified Successfully!");
     }
+
+    @When("I send a POST request with Invalid payload {string}")
+    public void iSendAPOSTRequestWithInvalidPayload(String invalidPayload) {
+        LogManager.info("Trying to send post request with invalid payload '"+invalidPayload+"'");
+        response=UserServiceController.post(invalidPayload);
+        LogManager.info("Request Sent successfully!");
+    }
+
+
 }
