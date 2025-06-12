@@ -6,7 +6,7 @@ Feature: ReqRes API Comprehensive Test Coverage
     Given I set the base URL to "https://reqres.in"
 
 
-  @GetUserList
+  @GetUserList @Regression
   Scenario: Get list of Users
     When I send GET request to retrieve all users
     Then I should receive a response with status code 200
@@ -25,7 +25,7 @@ Feature: ReqRes API Comprehensive Test Coverage
     When I send GET request to "users/23" endpoint
     Then I should receive a response with status code 404
 
-  @CreateUsers
+  @CreateUsers @Regression
   Scenario: Create User
     When I send a POST request to CREATE user with the following data:
       | name     | job    |
@@ -44,12 +44,12 @@ Feature: ReqRes API Comprehensive Test Coverage
     And POST or PUT response should contain field "name" and value "morpheus" in response body
 
 
-  @DeleteUser
+  @DeleteUser @Regression @Smoke
   Scenario: Delete User
     When I send a DELETE request to remove the user
     Then I should receive a response with status code 204
 
-  @Resources
+  @Resources @Regression @Smoke
   Scenario: Request chaining - Complete user lifecycle - Create, Read, Update, Delete
     When I send a POST request to CREATE user with the following data:
       | name     | job    |
@@ -67,7 +67,7 @@ Feature: ReqRes API Comprehensive Test Coverage
 
 # Validate HTTP Response Headers using RestAssured
 
-  @HeaderValidationContentType @Headers
+  @HeaderValidationContentType @Headers @Smoke
   Scenario: Validate Content-Type header for GET /users request
     When I send GET request to "users/2" endpoint
     Then I should receive a response with status code 200
@@ -81,12 +81,12 @@ Feature: ReqRes API Comprehensive Test Coverage
     And the response header "Server" should contain "cloudflare"
 
 
-  @Negative-InvalidPayload
+  @Negative-InvalidPayload @Regression @Smoke
   Scenario: Verify 400 Bad Request on invalid payload
     When I send a POST request with Invalid payload "----invalid responsjkljel----"
     Then I should receive a response with status code 400
 
-    @ResponseTimeValidation
+    @ResponseTimeValidation @Regression
   Scenario: Send a POST request to create a new user and verify Response time
     And the request body is:
       """
