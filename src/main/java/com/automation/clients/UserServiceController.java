@@ -80,15 +80,18 @@ public class UserServiceController {
 
     }
 
-    public static Response post(String email, String password) {
+    public static Response post(String payload, String endpoint) {
         Map<String, String> data = new HashMap<>();
         RequestSpecification request = given().contentType(ContentType.JSON).log().all();
-        if (email != null && password != null) {
-            request.body(data);
-            request.body("{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}");
-        }
-        return request.when().post(EndPoints.LOG_IN)
-                .then().log().all().extract().response();
+        return  apiClient.getRequestSpec()
+                .when()
+                .body(payload)
+                .post(endpoint)
+                .then()
+                .log()
+                .all()
+                .extract()
+                .response();
 
     }
 

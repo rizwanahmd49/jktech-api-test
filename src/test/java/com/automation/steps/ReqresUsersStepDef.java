@@ -10,12 +10,13 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.restassured.http.Header;
 import io.restassured.response.Response;
+import jdk.jpackage.internal.Log;
 import org.testng.Assert;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.Matchers.*;
 
 public class ReqresUsersStepDef {
 
@@ -178,4 +179,21 @@ public class ReqresUsersStepDef {
     }
 
 
+    @And("the request body is:")
+    public void theRequestBodyIs(String validPayload) {
+        LogManager.info("Trying to send post request with invalid payload '"+validPayload+"'");
+        
+        response=UserServiceController.post(validPayload,EndPoints.CREATE_USER);
+        long responseTime = response.getTimeIn(TimeUnit.MILLISECONDS);
+        System.out.println("Response Time: " + responseTime + " ms");
+        LogManager.info("Request Sent successfully!");
+
+    }
+
+    @And("the response time should be less than {long} ms")
+    public void theResponseTimeShouldBeLessThanMs(long expectedResponseTime) {
+        LogManager.info("Trying to validate Response time....");
+        response.then().assertThat().time(lessThan(expectedResponseTime));
+        LogManager.info("Response time validated successfully!");
+    }
 }
