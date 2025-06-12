@@ -86,7 +86,7 @@ Feature: ReqRes API Comprehensive Test Coverage
     When I send a POST request with Invalid payload "----invalid responsjkljel----"
     Then I should receive a response with status code 400
 
-    @PerformanceTest
+    @ResponseTimeValidation
   Scenario: Send a POST request to create a new user and verify Response time
     And the request body is:
       """
@@ -96,4 +96,4 @@ Feature: ReqRes API Comprehensive Test Coverage
       }
       """
     Then I should receive a response with status code 201
-    And the response time should be less than 3000 ms
+    And the response time should be less than 500 ms
